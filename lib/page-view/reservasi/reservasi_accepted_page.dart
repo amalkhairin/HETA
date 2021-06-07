@@ -4,7 +4,7 @@ import 'package:heta_app/components/heta_card.dart';
 import 'package:heta_app/constant/color.dart';
 import 'package:heta_app/page-view/home_page.dart';
 
-class ReservasiAccepted extends StatelessWidget {
+class ReservasiAcceptedPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size screenSize = Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
@@ -59,7 +59,7 @@ class ReservasiAccepted extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: (){
                     Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => Home())
+                      MaterialPageRoute(builder: (context) => HomePage())
                     );
                   },
                   style: ElevatedButton.styleFrom(

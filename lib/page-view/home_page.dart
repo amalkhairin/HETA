@@ -5,12 +5,12 @@ import 'package:heta_app/page-view/articles/articles_page.dart';
 import 'package:heta_app/page-view/history/history_main_page.dart';
 import 'package:heta_app/page-view/reservasi/reservasi_main_page.dart';
 
-class Home extends StatefulWidget {
+class HomePage extends StatefulWidget {
   @override
-  _HomeState createState() => _HomeState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _HomeState extends State<Home> {
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
@@ -39,7 +39,7 @@ class _HomeState extends State<Home> {
                       InkWell(
                         onTap: (){
                           Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => HistoryMain())
+                            MaterialPageRoute(builder: (context) => HistoryMainPage())
                           );
                         },
                         child: Icon(Icons.history, color: primaryColor, size: 42,)
@@ -63,7 +63,7 @@ class _HomeState extends State<Home> {
                       HETACard(
                         onTap: (){
                           Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => ReservasiMain())
+                            MaterialPageRoute(builder: (context) => ReservasiMainPage())
                           );
                         },
                         color: Colors.white,
@@ -117,7 +117,7 @@ class _HomeState extends State<Home> {
                       child: InkWell(
                         onTap: (){
                           Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => Articles())
+                            MaterialPageRoute(builder: (context) => ArticlesPage())
                           );
                         },
                         child: Row(

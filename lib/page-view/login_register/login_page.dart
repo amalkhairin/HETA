@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:heta_app/page-view/home_page.dart';
 import 'package:heta_app/page-view/login_register/registe_pager.dart';
 
-class Login extends StatefulWidget {
+class LoginPage extends StatefulWidget {
   @override
-  _LoginState createState() => _LoginState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginState extends State<Login> {
+class _LoginPageState extends State<LoginPage> {
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   bool _isSecure = true;
@@ -107,7 +107,7 @@ class _LoginState extends State<Login> {
                           _isLoading = true;
                         });
                         Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (context) => Home())
+                          MaterialPageRoute(builder: (context) => HomePage())
                         );
                       },
                       child: _isLoading? CircularProgressIndicator(color: Colors.white) : Text("Sign In"),
@@ -128,7 +128,7 @@ class _LoginState extends State<Login> {
                     TextButton(
                       onPressed: _isLoading? (){} : (){
                         Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => Register())
+                          MaterialPageRoute(builder: (context) => RegisterPage())
                         );
                       },
                       child: Text("Sign Up"),

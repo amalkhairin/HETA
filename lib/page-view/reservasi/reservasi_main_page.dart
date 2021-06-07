@@ -4,12 +4,12 @@ import 'package:heta_app/constant/color.dart';
 import 'package:heta_app/page-view/reservasi/reservasi_detail_page.dart';
 import 'package:heta_app/page-view/reservasi/reservasi_search_page.dart';
 
-class ReservasiMain extends StatefulWidget {
+class ReservasiMainPage extends StatefulWidget {
   @override
-  _ReservasiMainState createState() => _ReservasiMainState();
+  _ReservasiMainPageState createState() => _ReservasiMainPageState();
 }
 
-class _ReservasiMainState extends State<ReservasiMain> {
+class _ReservasiMainPageState extends State<ReservasiMainPage> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
@@ -167,7 +167,7 @@ class _ReservasiMainState extends State<ReservasiMain> {
                       TextButton(
                         onPressed: (){
                           Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => ReservasiSearch())
+                            MaterialPageRoute(builder: (context) => ReservasiSearchPage())
                           );
                         },
                         child: Text("See All", style: TextStyle(fontSize: 18, color: tertiaryColor),),
@@ -185,7 +185,7 @@ class _ReservasiMainState extends State<ReservasiMain> {
                       child: HETACard(
                         onTap: (){
                           Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => ReservasiDetail())
+                            MaterialPageRoute(builder: (context) => ReservasiDetailPage())
                           );
                         },
                         width: screenSize.width,

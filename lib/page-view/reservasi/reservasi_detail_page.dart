@@ -3,12 +3,12 @@ import 'package:heta_app/components/heta_card.dart';
 import 'package:heta_app/constant/color.dart';
 import 'package:heta_app/page-view/reservasi/reservasi_accepted_page.dart';
 
-class ReservasiDetail extends StatefulWidget {
+class ReservasiDetailPage extends StatefulWidget {
   @override
-  _ReservasiDetailState createState() => _ReservasiDetailState();
+  _ReservasiDetailPageState createState() => _ReservasiDetailPageState();
 }
 
-class _ReservasiDetailState extends State<ReservasiDetail> {
+class _ReservasiDetailPageState extends State<ReservasiDetailPage> {
 
   int? _selectedDateIndex;
   int? _selectedTimeIndex;
@@ -239,7 +239,7 @@ class _ReservasiDetailState extends State<ReservasiDetail> {
                   child: ElevatedButton(
                     onPressed: !_isSelectedAll()? null : (){
                       Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => ReservasiAccepted())
+                        MaterialPageRoute(builder: (context) => ReservasiAcceptedPage())
                       );
                     },
                     style: ElevatedButton.styleFrom(

@@ -3,14 +3,14 @@ import 'package:heta_app/components/heta_card.dart';
 import 'package:heta_app/constant/color.dart';
 import 'package:heta_app/page-view/reservasi/reservasi_detail_page.dart';
 
-class ReservasiSearch extends StatefulWidget {
+class ReservasiSearchPage extends StatefulWidget {
   final Widget? title;
-  ReservasiSearch({this.title});
+  ReservasiSearchPage({this.title});
   @override
-  _ReservasiSearchState createState() => _ReservasiSearchState();
+  _ReservasiSearchPageState createState() => _ReservasiSearchPageState();
 }
 
-class _ReservasiSearchState extends State<ReservasiSearch> {
+class _ReservasiSearchPageState extends State<ReservasiSearchPage> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
@@ -59,7 +59,7 @@ class _ReservasiSearchState extends State<ReservasiSearch> {
               child: HETACard(
                 onTap: (){
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => ReservasiDetail())
+                    MaterialPageRoute(builder: (context) => ReservasiDetailPage())
                   );
                 },
                 width: screenSize.width,

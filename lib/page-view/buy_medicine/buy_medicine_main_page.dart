@@ -6,12 +6,12 @@ import 'package:heta_app/components/heta_loading_indicator.dart.dart';
 import 'package:heta_app/constant/color.dart';
 import 'package:heta_app/model-logic/model/buy_medicine/obat.dart';
 
-class BuyMedicineMain extends StatefulWidget {
+class BuyMedicineMainPage extends StatefulWidget {
   @override
-  _BuyMedicineMainState createState() => _BuyMedicineMainState();
+  _BuyMedicineMainPageState createState() => _BuyMedicineMainPageState();
 }
 
-class _BuyMedicineMainState extends State<BuyMedicineMain> {
+class _BuyMedicineMainPageState extends State<BuyMedicineMainPage> {
   List _filterList = ["Cats", "Kittens", "Dogs"];
   List _selectedFilters = [];
   List _selectedFiltersIndex = [];

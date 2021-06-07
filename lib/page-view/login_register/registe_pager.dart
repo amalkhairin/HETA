@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:heta_app/page-view/login_register/login_page.dart';
 
-class Register extends StatefulWidget {
+class RegisterPage extends StatefulWidget {
   @override
-  _RegisterState createState() => _RegisterState();
+  _RegisterPageState createState() => _RegisterPageState();
 }
 
-class _RegisterState extends State<Register> {
+class _RegisterPageState extends State<RegisterPage> {
   TextEditingController _fullnameController = TextEditingController();
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
@@ -188,7 +188,7 @@ class _RegisterState extends State<Register> {
                     TextButton(
                       onPressed: _isLoading? (){} : (){
                         Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (context) => Login())
+                          MaterialPageRoute(builder: (context) => LoginPage())
                         );
                       },
                       child: Text("Sign In"),

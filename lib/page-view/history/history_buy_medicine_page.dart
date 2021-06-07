@@ -4,12 +4,12 @@ import 'package:heta_app/components/heta_card.dart';
 import 'package:heta_app/components/heta_loading_indicator.dart.dart';
 import 'package:heta_app/constant/color.dart';
 
-class HistoryBuyMedicine extends StatefulWidget {
+class HistoryBuyMedicinePage extends StatefulWidget {
   @override
-  _HistoryBuyMedicineState createState() => _HistoryBuyMedicineState();
+  _HistoryBuyMedicinePageState createState() => _HistoryBuyMedicinePageState();
 }
 
-class _HistoryBuyMedicineState extends State<HistoryBuyMedicine> {
+class _HistoryBuyMedicinePageState extends State<HistoryBuyMedicinePage> {
   List _listHistoryBuyMedicine = ["1"];
   bool _isLoading = true;
 

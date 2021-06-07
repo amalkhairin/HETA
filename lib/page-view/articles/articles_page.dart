@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:heta_app/constant/color.dart';
 
-class Articles extends StatelessWidget {
+class ArticlesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size screenSize = Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);

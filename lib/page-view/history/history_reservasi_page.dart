@@ -3,12 +3,12 @@ import 'package:heta_app/components/data_not_found.dart';
 import 'package:heta_app/components/heta_card.dart';
 import 'package:heta_app/constant/color.dart';
 
-class HistoryReservasi extends StatefulWidget {
+class HistoryReservasiPage extends StatefulWidget {
   @override
-  _HistoryReservasiState createState() => _HistoryReservasiState();
+  _HistoryReservasiPageState createState() => _HistoryReservasiPageState();
 }
 
-class _HistoryReservasiState extends State<HistoryReservasi> {
+class _HistoryReservasiPageState extends State<HistoryReservasiPage> {
   List _listHistoryReservasi = ["1"];
 
   @override

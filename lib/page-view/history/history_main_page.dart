@@ -3,12 +3,12 @@ import 'package:heta_app/constant/color.dart';
 import 'package:heta_app/page-view/history/history_buy_medicine_page.dart';
 import 'package:heta_app/page-view/history/history_reservasi_page.dart';
 
-class HistoryMain extends StatefulWidget {
+class HistoryMainPage extends StatefulWidget {
   @override
-  _HistoryMainState createState() => _HistoryMainState();
+  _HistoryMainPageState createState() => _HistoryMainPageState();
 }
 
-class _HistoryMainState extends State<HistoryMain> with TickerProviderStateMixin{
+class _HistoryMainPageState extends State<HistoryMainPage> with TickerProviderStateMixin{
   TabController? _tabController;
   
   @override
@@ -61,8 +61,8 @@ class _HistoryMainState extends State<HistoryMain> with TickerProviderStateMixin
           physics: NeverScrollableScrollPhysics(),
           controller: _tabController,
           children: [
-            HistoryReservasi(),
-            HistoryBuyMedicine(),
+            HistoryReservasiPage(),
+            HistoryBuyMedicinePage(),
           ],
         )
       ),
