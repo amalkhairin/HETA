@@ -21,18 +21,23 @@ class HETACard extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        width: width!,
-        height: height!,
-        decoration: BoxDecoration(
-          color: color!,
-          boxShadow: boxShadow,
-          borderRadius: BorderRadius.circular(6),
-          border: enableBorder? Border.all(color: borderColor!) : null,
+    return Material(
+      elevation: 6,
+      shadowColor: Colors.black.withOpacity(0.35),
+      borderRadius: BorderRadius.circular(6),
+      child: InkWell(
+        onTap: onTap,
+        child: Ink(
+          width: width!,
+          height: height!,
+          decoration: BoxDecoration(
+            color: color!,
+            boxShadow: boxShadow,
+            borderRadius: BorderRadius.circular(6),
+            border: enableBorder? Border.all(color: borderColor!) : null,
+          ),
+          child: child
         ),
-        child: child
       ),
     );
   }
