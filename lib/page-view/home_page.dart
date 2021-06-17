@@ -11,6 +11,7 @@ import 'package:heta_app/page-view/history/history_main_page.dart';
 import 'package:heta_app/page-view/login_register/login_page.dart';
 import 'package:heta_app/page-view/reservasi/reservasi_main_page.dart';
 import 'package:heta_app/utility/log.dart';
+import 'package:hive/hive.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -31,9 +32,11 @@ class _HomePageState extends State<HomePage> {
       for (var i = 0; i < res.length; i++) {
         _temp.add(Article.fromJson(res[i]));
       }
-      setState(() {
-        _listArticle = _temp;
-      });
+      if(mounted){
+        setState(() {
+          _listArticle = _temp;
+        });
+      }
     }
   }
 
@@ -102,7 +105,11 @@ class _HomePageState extends State<HomePage> {
                                           child: Text("Cancel"),
                                         ),
                                         TextButton(
-                                          onPressed: (){
+                                          onPressed: () async {
+                                            Hive.openBox("historyReservasi");
+                                            Hive.openBox("historyMedicine");
+                                            await Hive.box("historyReservasi").clear();
+                                            await Hive.box("historyMedicine").clear();
                                             Navigator.of(context).pushReplacement(
                                               MaterialPageRoute(builder: (context)=> LoginPage())
                                             );

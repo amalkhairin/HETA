@@ -1,17 +1,20 @@
 
+// class model obat
 class Obat {
   int? id;
   String? name;
   int? harga;
   String? image;
 
+  // constructor default
   Obat({
     this.id,
     this.name,
     this.harga,
     this.image
   });
-
+  
+  // json serialisation
   factory Obat.fromJson(Map<String, dynamic> data){
     return Obat(
       id : data['id_obat'],
@@ -21,6 +24,7 @@ class Obat {
     );
   }
 
+  // setter getter default
   int? getId() => this.id;
 
   set setId(int? value) {

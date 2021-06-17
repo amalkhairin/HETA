@@ -59,7 +59,7 @@ class _BuyMedicineCartPageState extends State<BuyMedicineCartPage> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
-
+    
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
@@ -174,7 +174,7 @@ class _BuyMedicineCartPageState extends State<BuyMedicineCartPage> {
                     child: ElevatedButton(
                       onPressed:(){
                         Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => BuyMedicineCheckoutPage(cart: _cart,))
+                          MaterialPageRoute(builder: (context) => BuyMedicineCheckoutPage(cart: _cart, data: _dataObat))
                         );
                       },
                       child: Row(

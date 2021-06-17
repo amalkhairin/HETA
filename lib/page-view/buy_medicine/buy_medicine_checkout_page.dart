@@ -3,10 +3,12 @@ import 'package:heta_app/components/heta_card.dart';
 import 'package:heta_app/constant/color.dart';
 import 'package:heta_app/model-logic/logic/cart.dart';
 import 'package:heta_app/page-view/buy_medicine/buy_medicine_confirm_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BuyMedicineCheckoutPage extends StatefulWidget {
   final Cart? cart;
-  BuyMedicineCheckoutPage({this.cart});
+  final List<Map<String, dynamic>>? data;
+  BuyMedicineCheckoutPage({this.cart, this.data});
   
   @override
   _BuyMedicineCheckoutPageState createState() => _BuyMedicineCheckoutPageState();
@@ -14,7 +16,24 @@ class BuyMedicineCheckoutPage extends StatefulWidget {
 
 class _BuyMedicineCheckoutPageState extends State<BuyMedicineCheckoutPage> {
   List _paymentMethods = ["gopay"];
-  int? _selectedIndex;
+  int? _selectedIndex = 0;
+  String _address = "Loading...";
+
+  loadAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String _add = "Err";
+    _add = await prefs.getString("address")!;
+    setState(() {
+      _address = _add;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadAddress();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +79,7 @@ class _BuyMedicineCheckoutPageState extends State<BuyMedicineCheckoutPage> {
                           Row(
                             children: [
                               Icon(Icons.place, color: tertiaryColor,),
-                              Text("Kost Darul Ilmi", style: TextStyle(color: primaryColor),),
+                              Text("$_address", style: TextStyle(color: primaryColor),),
                             ],
                           ),
                           Text("3.5 km", style: TextStyle(color: primaryColor))
@@ -87,7 +106,7 @@ class _BuyMedicineCheckoutPageState extends State<BuyMedicineCheckoutPage> {
                           child: Text("Payment with", style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.bold)),
                         ),
                         Row(
-                          children: List.generate(2, (index){
+                          children: List.generate(_paymentMethods.length, (index){
                             return Padding(
                               padding: EdgeInsets.only(left: 24, top: 12,),
                               child: HETACard(
@@ -100,17 +119,7 @@ class _BuyMedicineCheckoutPageState extends State<BuyMedicineCheckoutPage> {
                                 height: 50,
                                 enableBorder: _selectedIndex == index,
                                 borderColor: tertiaryColor,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Container(
-                                      width: 36,
-                                      height: 36,
-                                      child: Placeholder(),
-                                    ),
-                                    Text("${_paymentMethods[index]}"),
-                                  ],
-                                ),
+                                child: Image.network("https://halalkan.com/wp-content/uploads/2021/02/LOGO-GOPAY.png")
                               ),
                             );
                           }),
@@ -131,7 +140,7 @@ class _BuyMedicineCheckoutPageState extends State<BuyMedicineCheckoutPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text("${_paymentMethods[_selectedIndex!]} used", style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.bold)),
+                            Text("${_paymentMethods[0]} used", style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.bold)),
                             Text("- ${widget.cart!.totalHarga}", style: TextStyle(color: tertiaryColor, fontWeight: FontWeight.bold),)
                           ],
                         ),
@@ -157,7 +166,7 @@ class _BuyMedicineCheckoutPageState extends State<BuyMedicineCheckoutPage> {
                           child: Text("Payment total", style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.bold)),
                         ),
                         Column(
-                          children: List.generate(widget.cart!.listObat!.length, (index){
+                          children: List.generate(widget.data!.length, (index){
                             return Padding(
                               padding: EdgeInsets.only(left: 24, top: 8, right: 24),
                               child: Row(
@@ -165,12 +174,12 @@ class _BuyMedicineCheckoutPageState extends State<BuyMedicineCheckoutPage> {
                                 children: [
                                   Row(
                                     children: [
-                                      Text("${widget.cart!.listObat![index].name}", style: TextStyle(color: Colors.grey[700])),
+                                      Text("${widget.data![index]['name']}", style: TextStyle(color: Colors.grey[700])),
                                       SizedBox(width: 8,),
-                                      Text("| ${widget.cart!.getHargaObat(widget.cart!.listObat![index].id!)} x ${widget.cart!.jumlahObat(widget.cart!.listObat![index].id!)}", style: TextStyle(color: Colors.grey[700])),
+                                      Text("| ${widget.data![index]['total']} x ${widget.cart!.jumlahObat(widget.cart!.listObat![index].id!)}", style: TextStyle(color: Colors.grey[700])),
                                     ],
                                   ),
-                                  Text("Rp ${widget.cart!.getHargaObat(widget.cart!.listObat![index].id!)}", style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.bold))
+                                  Text("Rp ${widget.data![index]['total']}", style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.bold))
                                 ],
                               ),
                             );
@@ -210,7 +219,7 @@ class _BuyMedicineCheckoutPageState extends State<BuyMedicineCheckoutPage> {
                 child: ElevatedButton(
                   onPressed: (){
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => BuyMedicineConfirmPage(cart: widget.cart, paymentMethod: _paymentMethods[_selectedIndex!],))
+                      MaterialPageRoute(builder: (context) => BuyMedicineConfirmPage(cart: widget.cart, paymentMethod: _paymentMethods[0], data: widget.data, address:_address))
                     );
                   },
                   style: ElevatedButton.styleFrom(

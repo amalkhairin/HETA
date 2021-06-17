@@ -1,7 +1,7 @@
 
 class API {
   // base url
-  static const URL = "57cd9cc3091c.ngrok.io";
+  static const URL = "1a912083842d.ngrok.io";
 
   // path
   static const LOGIN = "/v1/login/form";
@@ -13,4 +13,5 @@ class API {
   static const KLINIK_ALL = "/v1/reservasi/getAllKlinik";
   static const INSERT_RESERVASI = "/v1/reservasi/insert";
   static const MEDICINE_ALL = "/v1/medicine/getAll";
+  static const MEDICINE_PAYMENT = "v1/medicine/payment";
 }

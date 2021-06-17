@@ -2,6 +2,7 @@
 import 'package:hive/hive.dart';
 part 'history_reservasi.g.dart';
 
+// history reservasi class
 class HistoryReservasi {
   String? reservasinumber;
   String? namaKlinik;
@@ -10,6 +11,7 @@ class HistoryReservasi {
   String? time;
   String? date;
 
+  // default constructor
   HistoryReservasi({
     this.reservasinumber,
     this.namaDokter,
@@ -19,6 +21,7 @@ class HistoryReservasi {
     this.time
   });
 
+  // json serialization
   factory HistoryReservasi.fromJson(Map<String, dynamic> data){
     return HistoryReservasi(
       reservasinumber: data['reservasi_number'],
@@ -31,6 +34,7 @@ class HistoryReservasi {
   }
 }
 
+// historyReservasi class model
 @HiveType(adapterName: "HistoryReservasiAdapter",typeId: 0)
 class HistoryReservasiModel {
   @HiveField(0)
@@ -46,6 +50,7 @@ class HistoryReservasiModel {
   @HiveField(5)
   String? date;
 
+  // default constructor
   HistoryReservasiModel({
     this.reservasinumber,
     this.namaDokter,

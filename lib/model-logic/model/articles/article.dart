@@ -1,4 +1,5 @@
 
+// class model article
 class Article {
   int? id;
   String? title;
@@ -7,6 +8,7 @@ class Article {
   String? date;
   String? photo;
 
+  // constructor default
   Article({
     this.id,
     this.title,
@@ -16,6 +18,7 @@ class Article {
     this.photo
   });
 
+  // json serialization
   factory Article.fromJson(Map<String, dynamic> data) {
     return Article(
       id : data["id"],
@@ -27,6 +30,7 @@ class Article {
     );
   }
 
+  // setter getter default
   int? get getId => this.id;
 
   set setId(int? id) => this.id = id;

@@ -7,7 +7,8 @@ import 'package:heta_app/page-view/home_page.dart';
 class ReservasiAcceptedPage extends StatelessWidget {
   String? nama;
   String? date;
-  ReservasiAcceptedPage({this.nama, this.date});
+  String? number;
+  ReservasiAcceptedPage({this.nama, this.date, this.number});
   @override
   Widget build(BuildContext context) {
     Size screenSize = Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
@@ -37,7 +38,7 @@ class ReservasiAcceptedPage extends StatelessWidget {
                   children: [
                     Icon(Icons.check_circle, size: 100, color: greenColor,),
                     Text("Appointment Accepted", style: TextStyle(color: greenColor, fontSize: 28, fontWeight: FontWeight.w500),),
-                    Text("Reservastion Number: 001", style: TextStyle(color: Colors.grey, fontSize: 14),),
+                    Text("Reservastion Number: $number", style: TextStyle(color: Colors.grey, fontSize: 14),),
                     Padding(
                       padding: const EdgeInsets.only(left: 24, right: 24),
                       child: DashedLine(color: Colors.grey[300], height: 2,),

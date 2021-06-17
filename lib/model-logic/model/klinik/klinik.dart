@@ -1,4 +1,5 @@
 
+/// class model Klinik
 class Klinik {
   int? id;
   String? name;
@@ -7,6 +8,7 @@ class Klinik {
   String? treatment;
   String? operationalTime;
 
+  // default constructor
   Klinik({
     this.id,
     this.name,
@@ -16,6 +18,7 @@ class Klinik {
     this.operationalTime
   });
 
+  // json serialization
   factory Klinik.fromjson(Map<String, dynamic> data){
     return Klinik(
       id : data['id_klinik'],
@@ -27,6 +30,7 @@ class Klinik {
     );
   }
 
+  // setter getter default
   int? get getId => this.id;
 
   set setId(int? id) => this.id = id;

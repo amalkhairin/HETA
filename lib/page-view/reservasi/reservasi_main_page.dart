@@ -6,6 +6,7 @@ import 'package:heta_app/model-logic/logic/db.dart';
 import 'package:heta_app/model-logic/model/klinik/klinik.dart';
 import 'package:heta_app/page-view/reservasi/reservasi_detail_page.dart';
 import 'package:heta_app/page-view/reservasi/reservasi_search_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ReservasiMainPage extends StatefulWidget {
   @override
@@ -17,6 +18,7 @@ class _ReservasiMainPageState extends State<ReservasiMainPage> {
   List<Klinik>? _listKlinik;
   List<Klinik>? _listTempKlinik = [];
   Database db = Database();
+  String _address = "loading...";
 
   loadKlinik() async {
     List<Klinik> _temp = [];
@@ -32,11 +34,21 @@ class _ReservasiMainPageState extends State<ReservasiMainPage> {
     }
   }
 
+  loadAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String _add = "Err";
+    _add = await prefs.getString("address")!;
+    setState(() {
+      _address = _add;
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     loadKlinik();
+    loadAddress();
   }
 
   @override
@@ -58,7 +70,7 @@ class _ReservasiMainPageState extends State<ReservasiMainPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(Icons.place, color: Color(0xFFFFCF5C),),
-              Text("Bandung", style: TextStyle(color: primaryColor),)
+              Text("$_address", style: TextStyle(color: primaryColor),)
             ],
           ),
         ),
@@ -93,7 +105,7 @@ class _ReservasiMainPageState extends State<ReservasiMainPage> {
                                   _temp.add(item);
                               }
                               Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => ReservasiSearchPage(title: "Treatment - Checkup}", listKlinik: _temp,))
+                                MaterialPageRoute(builder: (context) => ReservasiSearchPage(title: "Treatment - Checkup", listKlinik: _temp,))
                               );
                             },
                             color: Colors.white,
@@ -120,7 +132,7 @@ class _ReservasiMainPageState extends State<ReservasiMainPage> {
                                   _temp.add(item);
                               }
                               Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => ReservasiSearchPage(title: "Treatment - Vaccine}", listKlinik: _temp,))
+                                MaterialPageRoute(builder: (context) => ReservasiSearchPage(title: "Treatment - Vaccine", listKlinik: _temp,))
                               );
                             },
                             color: Colors.white,
@@ -147,7 +159,7 @@ class _ReservasiMainPageState extends State<ReservasiMainPage> {
                                   _temp.add(item);
                               }
                               Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => ReservasiSearchPage(title: "Treatment - Flea}", listKlinik: _temp,))
+                                MaterialPageRoute(builder: (context) => ReservasiSearchPage(title: "Treatment - Flea", listKlinik: _temp,))
                               );
                             },
                             color: Colors.white,
@@ -180,7 +192,7 @@ class _ReservasiMainPageState extends State<ReservasiMainPage> {
                                   _temp.add(item);
                               }
                               Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => ReservasiSearchPage(title: "Treatment - Neuter}", listKlinik: _temp,))
+                                MaterialPageRoute(builder: (context) => ReservasiSearchPage(title: "Treatment - Neuter", listKlinik: _temp,))
                               );
                             },
                             color: Colors.white,
@@ -208,7 +220,7 @@ class _ReservasiMainPageState extends State<ReservasiMainPage> {
                                   _temp.add(item);
                               }
                               Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => ReservasiSearchPage(title: "Treatment - Spray}", listKlinik: _temp,))
+                                MaterialPageRoute(builder: (context) => ReservasiSearchPage(title: "Treatment - Spray", listKlinik: _temp,))
                               );
                             },
                             color: Colors.white,

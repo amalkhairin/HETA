@@ -13,6 +13,7 @@ class Database {
   Database._internal();
   factory Database() => _instance;
 
+  // login user
   Future<dynamic> userLogin({String? username, String? password})async {
     try {
       var url = Uri.https(API.URL, API.LOGIN);
@@ -36,6 +37,7 @@ class Database {
     }
   }
 
+  // create new user / register
   Future<dynamic> createNewUser({String? fullname, String? username, String? email, String? password})async {
     try {
       var url = Uri.https(API.URL, API.REGISTER);
@@ -59,6 +61,7 @@ class Database {
     }
   }
 
+  // get all article
   Future<dynamic> getAllArticle() async {
     try {
       var url = Uri.https(API.URL, API.ARTICLE);
@@ -75,6 +78,7 @@ class Database {
     }
   }
 
+  // get all klinik
   Future<dynamic> getAllKlinik() async {
     try {
       var url = Uri.https(API.URL, API.KLINIK_ALL);
@@ -91,6 +95,7 @@ class Database {
     }
   }
 
+  // get all medicine
   Future<dynamic> getAllMedicine() async {
     try {
       var url = Uri.https(API.URL, API.MEDICINE_ALL);
@@ -107,6 +112,7 @@ class Database {
     }
   }
 
+  // create new reservation / insert reservation
   Future<dynamic> insertReservasi({int? id_pemilikHewan, int? id_klinik, String? date}) async {
     try {
       var url = Uri.https(API.URL, API.INSERT_RESERVASI);
@@ -129,6 +135,7 @@ class Database {
     }
   }
 
+  // get history reservasi
   Future<dynamic> getHistoryReservasi() async {
     try {
       var url = Uri.https(API.URL, API.HISTORY_RESERVASI);
@@ -145,6 +152,7 @@ class Database {
     }
   }
 
+  // get history medicine
   Future<dynamic> getHistoryMedicine() async {
     try {
       var url = Uri.https(API.URL, API.HISTORY_MEDICINE);
@@ -157,6 +165,38 @@ class Database {
       return false;
     } catch (e) {
       print("get history medicine error: $e");
+      return false;
+    }
+  }
+
+  // add new transaction medicine
+  Future<dynamic> addTransaction(int id, List<Map<String, dynamic>> listObat, String alamat, String paymentMethod) async {
+    try {
+      var url = Uri.https(API.URL, API.MEDICINE_PAYMENT);
+      List<Map<String, dynamic>> _temp = [];
+      for (var i = 0; i < listObat.length; i++) {
+        _temp.add({
+          "id_obat": listObat[i]['id_obat'],
+          "qty": listObat[i]['qty']
+        });
+      }
+      var reqBody = {
+        "id_pemilikHewan": id.toString(),
+        "list_obat": _temp,
+        "alamat": alamat,
+        "paymentMethod": paymentMethod
+      };
+      var body = json.encode(reqBody);
+      print(body.runtimeType);
+      var response = await http.post(url, body: body, headers: {'Content-type': 'application/json'});
+      if (response.statusCode == 200) {
+        print(response.body);
+        var jsonRes = json.decode(response.body);
+        return jsonRes;
+      }
+      return false;
+    } catch (e) {
+      print("add transaction error: $e");
       return false;
     }
   }

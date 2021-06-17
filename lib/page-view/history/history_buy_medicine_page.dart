@@ -15,14 +15,14 @@ class HistoryBuyMedicinePage extends StatefulWidget {
 }
 
 class _HistoryBuyMedicinePageState extends State<HistoryBuyMedicinePage> {
-  List<HistoryBuyMedicine> _listHistoryBuyMedicine = [];
+  List<HistoryBuyMedicineModel> _listHistoryBuyMedicine = [];
   bool _isLoading = true;
   PemilikHewan _user = PemilikHewan.instance;
 
   Database db = Database();
 
   loadHistoryBuyMedicine() async {
-    List<HistoryBuyMedicine> _temp = [];
+    List<HistoryBuyMedicineModel> _temp = [];
     var res = await db.getHistoryReservasi();
     if (res != false) {
       if (mounted) {
@@ -31,7 +31,7 @@ class _HistoryBuyMedicinePageState extends State<HistoryBuyMedicinePage> {
         });
       }
       for (var i = 0; i < res.length; i++) {
-        _temp.add(HistoryBuyMedicine.fromJson(res[i]));
+        // _temp.add(HistoryBuyMedicine.fromJson(res[i]));
       }
       if(mounted){
         setState(() {
@@ -47,11 +47,24 @@ class _HistoryBuyMedicinePageState extends State<HistoryBuyMedicinePage> {
     }
   }
 
+  loadData() async {
+    Box _box = await Hive.openBox("historyMedicine");
+    if(mounted){
+      setState(() {
+        for (var i = 0; i < _box.length; i++) {
+          _listHistoryBuyMedicine.add(_box.get(i));
+        }
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     // loadHistoryBuyMedicine();
+    loadData();
   }
 
   @override
@@ -82,11 +95,13 @@ class _HistoryBuyMedicinePageState extends State<HistoryBuyMedicinePage> {
                 return ValueListenableBuilder(
                   valueListenable: _box.listenable(),
                   builder: (context, Box box, _) {
-                    if(box.isNotEmpty){
-                      setState(() {
-                        _listHistoryBuyMedicine = box.getAt(_user.id!);
-                      });
-                    }
+                    // if(box.isNotEmpty){
+                    //   setState(() {
+                    //     for (var i = 0; i < box.length; i++) {
+                    //       _listHistoryBuyMedicine.add(box.get(i));
+                    //     }
+                    //   });
+                    // }
                     return ListView.builder(
                       itemCount: _listHistoryBuyMedicine.length,
                       itemBuilder: (context, index){

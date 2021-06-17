@@ -2,6 +2,7 @@
 import 'package:heta_app/model-logic/model/buy_medicine/obat.dart';
 import 'package:flutter/material.dart';
 
+// class model-logic cart
 class Cart {
   int? _idPemilikHewan;
   List<Obat>? _listObat;

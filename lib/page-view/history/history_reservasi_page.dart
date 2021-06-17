@@ -46,10 +46,25 @@ class _HistoryReservasiPageState extends State<HistoryReservasiPage> {
     }
   }
 
+  loadData() async {
+    List<HistoryReservasiModel> _temp = [];
+    Box _box = await Hive.openBox("historyReservasi");
+    for (var i = 0; i < _box.length; i++) {
+      _temp.add(_box.get(i));
+    }
+    if(mounted){
+      setState(() {
+        _listHistoryReservasi = _temp;
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadData();
     // loadHistoryReservasi();
   }
 
@@ -57,18 +72,20 @@ class _HistoryReservasiPageState extends State<HistoryReservasiPage> {
   Widget build(BuildContext context) {
     Size screenSize = Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
 
-    return _isLoading 
-    ? Center(
-      child: HETALoadingIndicator(),
+    return _isLoading
+    ? Container(
+      child: Center(child: HETALoadingIndicator()),
     )
     : Container(
       color: backgroundColor,
-      child: _listHistoryReservasi! != null
+      child: _listHistoryReservasi != null
       ? ValueListenableBuilder(
         valueListenable: Hive.box("historyReservasi").listenable(),
         builder: (context, Box box, _) {
           if(box.isNotEmpty){
-            _listHistoryReservasi = box.getAt(_user.id!);
+            // setState(() {
+              
+            // });
           }
           return ListView.builder(
             itemCount: _listHistoryReservasi!.length,

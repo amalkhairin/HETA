@@ -8,7 +8,9 @@ import 'package:heta_app/page-view/home_page.dart';
 class BuyMedicineSuccessPage extends StatelessWidget {
   final Cart? cart;
   final String? paymentMethod;
-  BuyMedicineSuccessPage({this.cart, this.paymentMethod});
+  final List<Map<String, dynamic>>? data;
+  final String? number;
+  BuyMedicineSuccessPage({this.cart, this.paymentMethod, this.data, this.number});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +41,7 @@ class BuyMedicineSuccessPage extends StatelessWidget {
                   children: [
                     Icon(Icons.check_circle, size: 100, color: greenColor,),
                     Text("Payment Successfull", style: TextStyle(color: greenColor, fontSize: 28, fontWeight: FontWeight.w500),),
-                    Text("Transaction Number: 00113345", style: TextStyle(color: Colors.grey, fontSize: 14),),
+                    Text("Transaction Number: $number", style: TextStyle(color: Colors.grey, fontSize: 14),),
                     Padding(
                       padding: const EdgeInsets.only(left: 24, right: 24),
                       child: DashedLine(color: Colors.grey[300], height: 2,),
@@ -47,7 +49,7 @@ class BuyMedicineSuccessPage extends StatelessWidget {
                     Column(
                       children: [
                         Column(
-                          children: List.generate(cart!.listObat!.length, (index){
+                          children: List.generate(data!.length, (index){
                             return Padding(
                               padding: EdgeInsets.only(left: 24, top: 8, right: 24),
                               child: Row(
@@ -55,12 +57,12 @@ class BuyMedicineSuccessPage extends StatelessWidget {
                                 children: [
                                   Row(
                                     children: [
-                                      Text("${cart!.listObat![index].name}", style: TextStyle(color: Colors.grey[700])),
+                                      Text("${data![index]['name']}", style: TextStyle(color: Colors.grey[700])),
                                       SizedBox(width: 8,),
-                                      Text("| ${cart!.getHargaObat(cart!.listObat![index].id!)} x ${cart!.jumlahObat(cart!.listObat![index].id!)}", style: TextStyle(color: Colors.grey[700])),
+                                      Text("| ${data![index]['total']} x ${cart!.jumlahObat(cart!.listObat![index].id!)}", style: TextStyle(color: Colors.grey[700])),
                                     ],
                                   ),
-                                  Text("Rp ${cart!.getHargaObat(cart!.listObat![index].id!)}", style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.bold))
+                                  Text("Rp ${data![index]['total']}", style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.bold))
                                 ],
                               ),
                             );

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:geocode/geocode.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:heta_app/model-logic/logic/db.dart';
 import 'package:heta_app/model-logic/model/pemilik_hewan/pemilik_hewan.dart';
 import 'package:heta_app/page-view/home_page.dart';
 import 'package:heta_app/page-view/login_register/login_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -17,6 +20,16 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _isSecure = true;
   bool _isLoading = false;
   Database db = Database();
+  Position? _currentPosition;
+  String? _currentAddress;
+  GeoCode geoCode = GeoCode();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getCurrentLocation();
+  }
 
   ///menampilkan view
   @override
@@ -199,7 +212,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               builder: (context){
                                 return AlertDialog(
                                   title: Text("Error"),
-                                  content: Text("Register Failed!"),
+                                  content: Text("Register Failed!\nPlease check you internet connection"),
                                   actions: [
                                     TextButton(
                                       onPressed: (){
@@ -266,4 +279,32 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
+
+  _getCurrentLocation() {
+    Geolocator
+      .getCurrentPosition(desiredAccuracy: LocationAccuracy.best, forceAndroidLocationManager: true)
+      .then((Position position) {
+        setState(() {
+          _currentPosition = position;
+          _getAddressFromLatLng();
+        });
+      }).catchError((e) {
+        print(e);
+      });
+  }
+
+  _getAddressFromLatLng() async {
+    try {
+      Address _address = await geoCode.reverseGeocoding(latitude: _currentPosition!.latitude, longitude: _currentPosition!.longitude);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString("address", "${_address.city}");
+      setState(() {
+        _currentAddress = "${_address.city}";
+      });
+      print(_currentAddress);
+    } catch (e) {
+      print(e);
+    }
+  }
+  
 }

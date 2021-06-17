@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:heta_app/constant/color.dart';
 import 'package:heta_app/model-logic/logic/cart.dart';
+import 'package:heta_app/model-logic/logic/db.dart';
 import 'package:heta_app/model-logic/model/history/history_buymedicine.dart';
 import 'package:heta_app/model-logic/model/pemilik_hewan/pemilik_hewan.dart';
 import 'package:heta_app/page-view/buy_medicine/buy_medicine_success_page.dart';
+import 'package:heta_app/page-view/home_page.dart';
 import 'package:heta_app/utility/number_generator.dart';
 import 'package:hive/hive.dart';
 
-class BuyMedicineConfirmPage extends StatelessWidget {
+class BuyMedicineConfirmPage extends StatefulWidget {
   final Cart? cart;
   final String? paymentMethod;
-  BuyMedicineConfirmPage({this.cart, this.paymentMethod});
+  final List<Map<String, dynamic>>? data;
+  final String? address;
+  BuyMedicineConfirmPage({this.cart, this.paymentMethod, this.data, this.address});
+
+  @override
+  _BuyMedicineConfirmPageState createState() => _BuyMedicineConfirmPageState();
+}
+
+class _BuyMedicineConfirmPageState extends State<BuyMedicineConfirmPage> {
+
+  bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     Size screenSize = Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
@@ -25,7 +38,7 @@ class BuyMedicineConfirmPage extends StatelessWidget {
               child: Container(
                 width: screenSize.width/2,
                 height: 72,
-                child: Placeholder(),
+                child: Image.network("https://halalkan.com/wp-content/uploads/2021/02/LOGO-GOPAY.png"),
               ),
             ),
             Padding(
@@ -53,7 +66,7 @@ class BuyMedicineConfirmPage extends StatelessWidget {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: Placeholder(),
+                child: Image.network("https://i.ibb.co/JF5tzNq/image-17.png", fit: BoxFit.fill,),
               ),
             ),
             Padding(
@@ -62,29 +75,65 @@ class BuyMedicineConfirmPage extends StatelessWidget {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: (){
-                    Box _tempBox = Hive.box("historyMedicine");
+                  onPressed: _isLoading? (){} : () async {
+                    setState(() {
+                      _isLoading = true;
+                    });
+                    Box _tempBox = await Hive.openBox("historyMedicine");
                     PemilikHewan _user = PemilikHewan.instance;
+                    Database db = Database();
+                    var date = DateTime.now();
+                    String trasnumber = Generator.transactionNumber();
                     HistoryBuyMedicineModel _tempMedicine = HistoryBuyMedicineModel(
-                      transactionNumber: Generator.transactionNumber(),
-                      alamatPemilikHewan: "alamat",
-                      itemCount: cart!.totalJumlahObat,
-                      payment: paymentMethod,
-                      price: cart!.totalHarga,
-                      date: DateTime.now().hour.toString() + ":" + DateTime.now().minute.toString()
+                      transactionNumber: trasnumber,
+                      alamatPemilikHewan: widget.address!,
+                      itemCount: widget.cart!.totalJumlahObat,
+                      payment: widget.paymentMethod,
+                      price: widget.cart!.totalHarga,
+                      date: date.hour.toString() + ":" + date.minute.toString()
                     );
-                    _tempBox.putAt(_user.id!, _tempMedicine);
-
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => BuyMedicineSuccessPage(cart: cart, paymentMethod: paymentMethod,))
-                    );
+                    // print(data);
+                    var res = await db.addTransaction(_user.id!, widget.data!, widget.address!, widget.paymentMethod!);
+                    // print(data!.toString());
+                    if(res != false){
+                      setState(() {
+                        _isLoading = false;
+                      });
+                      _tempBox.add(_tempMedicine);
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) => BuyMedicineSuccessPage(cart: widget.cart, paymentMethod: widget.paymentMethod, data: widget.data!, number: trasnumber))
+                      );
+                    } else {
+                      setState(() {
+                        _isLoading = false;
+                      });
+                      showDialog(
+                        context: context, 
+                        builder: (context){
+                          return AlertDialog(
+                            title: Text("Error"),
+                            content: Text("Transaction Failed!\nPlease check you internet connection"),
+                            actions: [
+                              TextButton(
+                                onPressed: (){
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(builder: (context) => HomePage())
+                                  );
+                                },
+                                child: Text("Ok"),
+                              )
+                            ],
+                          );
+                        }
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     primary: Color(0xFFFDA57D),
                     onPrimary: Colors.white,
                     elevation: 0,
                   ),
-                  child: Text("Confirm Payment"),
+                  child: _isLoading? CircularProgressIndicator(color: Colors.white,) : Text("Confirm Payment"),
                 ),
               ),
             ),

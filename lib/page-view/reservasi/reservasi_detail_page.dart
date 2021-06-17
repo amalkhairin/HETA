@@ -4,10 +4,12 @@ import 'package:heta_app/constant/color.dart';
 import 'package:heta_app/model-logic/logic/db.dart';
 import 'package:heta_app/model-logic/model/klinik/klinik.dart';
 import 'package:heta_app/model-logic/model/pemilik_hewan/pemilik_hewan.dart';
+import 'package:heta_app/page-view/home_page.dart';
 import 'package:heta_app/page-view/reservasi/reservasi_accepted_page.dart';
 import 'package:heta_app/utility/number_generator.dart';
 import 'package:hive/hive.dart';
 import 'package:heta_app/model-logic/model/history/history_reservasi.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ReservasiDetailPage extends StatefulWidget {
   final Klinik? klinik;
@@ -28,15 +30,27 @@ class _ReservasiDetailPageState extends State<ReservasiDetailPage> {
   String _selectedTime = "";
   List _hari = ["Tuesday, 15 May", "Wednesday, 16 May", "Thursday, 17 May"];
   List _tempHari = ["2021-06-15", "2021-06-16", "2021-06-16"];
+  bool _isLoading = false;
+  String _address = "Loading...";
 
   bool _isSelectedAll(){
     return _selectedDateIndex != null && _selectedTimeIndex != null && _selectedOPTimeIndex != null;
+  }
+
+  loadAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String _add = "Err";
+    _add = await prefs.getString("address")!;
+    setState(() {
+      _address = _add;
+    });
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadAddress();
   }
 
   @override
@@ -254,32 +268,63 @@ class _ReservasiDetailPageState extends State<ReservasiDetailPage> {
                   width: double.infinity,
                   height: 54,
                   child: ElevatedButton(
-                    onPressed: !_isSelectedAll()? null : () async {
+                    onPressed: !_isSelectedAll() || _isLoading? null : () async {
+                      setState(() {
+                        _isLoading = true;
+                      });
                       Database db = Database();
                       PemilikHewan _user = PemilikHewan.instance;
                       print("user: ${_user.id}");
                       var res = await db.insertReservasi(id_pemilikHewan: _user.id, id_klinik: widget.klinik!.id, date: _tempHari[_selectedDateIndex!]);
-                      Box _tempBox = Hive.box("historyReservasi");
-                      HistoryReservasiModel _tempHistory = HistoryReservasiModel(
-                        reservasinumber: Generator.reservationNumber(),
-                        namaDokter: "Drh. Tirta Wijaya",
-                        namaKlinik: "${widget.klinik!.name}",
-                        alamatKlinik: "${widget.klinik!.address}",
-                        date: _tempHari[_selectedDateIndex!],
-                        time: _selectedTime
-                      );
-                      _tempBox.putAt(_user.id!, _tempHistory);
-                      
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => ReservasiAcceptedPage(nama: widget.klinik!.getName,date: _hari[_selectedDateIndex!],))
-                      );
+                      if(res != false){
+                        Box _tempBox = await Hive.openBox("historyReservasi");
+                        String resnum = Generator.reservationNumber();
+                        HistoryReservasiModel _tempHistory = HistoryReservasiModel(
+                          reservasinumber: resnum,
+                          namaDokter: "Drh. Tirta Wijaya",
+                          namaKlinik: "${widget.klinik!.name}",
+                          alamatKlinik: "${widget.klinik!.address}",
+                          date: _tempHari[_selectedDateIndex!],
+                          time: _selectedTime
+                        );
+                        _tempBox.add(_tempHistory);
+                        setState(() {
+                          _isLoading = false;
+                        });
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => ReservasiAcceptedPage(nama: widget.klinik!.getName,date: _hari[_selectedDateIndex!], number: resnum))
+                        );
+                      } else {
+                        setState(() {
+                          _isLoading = false;
+                        });
+                        showDialog(
+                          context: context, 
+                          builder: (context){
+                            return AlertDialog(
+                              title: Text("Error"),
+                              content: Text("Reservation Failed!\nPlease check you internet connection"),
+                              actions: [
+                                TextButton(
+                                  onPressed: (){
+                                    Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(builder: (context) => HomePage())
+                                    );
+                                  },
+                                  child: Text("Ok"),
+                                )
+                              ],
+                            );
+                          }
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       primary: primaryColor,
                       onPrimary: Colors.white,
                       elevation: 0,
                     ),
-                    child: Text("Done"),
+                    child: _isLoading? CircularProgressIndicator(color: Colors.white,) : Text("Done"),
                   ),
                 ),
               ),

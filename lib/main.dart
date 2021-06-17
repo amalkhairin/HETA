@@ -1,15 +1,17 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:heta_app/model-logic/model/history/history_buymedicine.dart';
 import 'package:heta_app/model-logic/model/history/history_reservasi.dart';
 import 'package:heta_app/page-view/login_register/login_page.dart';
 import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart' as pathProvider;
+import 'package:path_provider/path_provider.dart';
 
 Future main() async {
-  Directory directory = await pathProvider.getApplicationDocumentsDirectory();
-  Hive.init(directory.path);
+  WidgetsFlutterBinding.ensureInitialized();
+  // load data from local storage
+  // get application directory
+  var appDir = await getApplicationDocumentsDirectory();
+  Hive.init(appDir.path);
   Hive.registerAdapter(HistoryMedicineAdapter());
   Hive.registerAdapter(HistoryReservasiAdapter());
   Hive.openBox("histryReservasi");

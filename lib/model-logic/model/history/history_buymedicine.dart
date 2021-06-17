@@ -2,6 +2,7 @@
 import 'package:hive/hive.dart';
 part 'history_buymedicine.g.dart';
 
+// class history buy medicine
 class HistoryBuyMedicine {
   String? transactionNumber;
   String? alamatPemilikHewan;
@@ -10,6 +11,7 @@ class HistoryBuyMedicine {
   double? price;
   String? date;
 
+  // default constructor
   HistoryBuyMedicine({
     this.transactionNumber,
     this.alamatPemilikHewan,
@@ -19,6 +21,7 @@ class HistoryBuyMedicine {
     this.date
   });
 
+  // json serialization
   factory HistoryBuyMedicine.fromJson(Map<String, dynamic> data){
     return HistoryBuyMedicine(
       transactionNumber: data['transaction_number'],
@@ -32,6 +35,7 @@ class HistoryBuyMedicine {
 
 }
 
+// class model history buy medicine
 @HiveType(adapterName:"HistoryMedicineAdapter", typeId: 1)
 class HistoryBuyMedicineModel {
   @HiveField(0)

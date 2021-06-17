@@ -1,4 +1,5 @@
 
+/// class model PemilikHewan
 class PemilikHewan {
   int? _id;
   String? _fullname;
@@ -12,9 +13,9 @@ class PemilikHewan {
   static String? _emailTemp;
   static String? _passwordTemp;
 
+  /// singleton code
   static final PemilikHewan instance = PemilikHewan._internal();
 
-  // factory PemilikHewan()
 
   factory PemilikHewan(Map<String, dynamic> jsonData){
     var data = jsonData['result'][0];
@@ -33,7 +34,9 @@ class PemilikHewan {
     this._email = _emailTemp;
     this._password = _passwordTemp;
   }
-
+  ///
+  
+  /// setter getter default
   int? get id => this._id;
 
   set id(int? value) => this._id = value;
