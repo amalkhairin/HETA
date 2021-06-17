@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:heta_app/model-logic/logic/db.dart';
+import 'package:heta_app/model-logic/model/pemilik_hewan/pemilik_hewan.dart';
+import 'package:heta_app/page-view/home_page.dart';
 import 'package:heta_app/page-view/login_register/login_page.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -13,6 +16,7 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController _passwordController = TextEditingController();
   bool _isSecure = true;
   bool _isLoading = false;
+  Database db = Database();
 
   ///menampilkan view
   @override
@@ -165,10 +169,67 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: Padding(
                     padding: EdgeInsets.only(left: 24, right: 24),
                     child: ElevatedButton(
-                      onPressed: _isLoading? (){} : (){
-                        setState(() {
-                          _isLoading = true;
-                        });
+                      onPressed: _isLoading? (){} : () async {
+                        if(_usernameController.text.isNotEmpty && _passwordController.text.isNotEmpty && _fullnameController.text.isNotEmpty && _emailController.text.isNotEmpty){
+                          setState(() {
+                            _isLoading = true;
+                          });
+
+                          var res = await db.createNewUser(fullname:_fullnameController.text, username: _usernameController.text, email: _emailController.text, password: _passwordController.text);
+                          if(res != false){
+                            var login = await db.userLogin(username: _usernameController.text, password: _passwordController.text);
+                            if(login != false){
+                              PemilikHewan user = PemilikHewan(login);
+                              setState(() {
+                                _isLoading = false;
+                              });
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(builder: (context) => HomePage())
+                              );
+                            }
+                            setState(() {
+                              _isLoading = false;
+                            });
+                          } else {
+                            setState(() {
+                              _isLoading = false;
+                            });
+                            showDialog(
+                              context: context, 
+                              builder: (context){
+                                return AlertDialog(
+                                  title: Text("Error"),
+                                  content: Text("Register Failed!"),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: (){
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text("Ok"),
+                                    )
+                                  ],
+                                );
+                              }
+                            );
+                          }
+                        } else {
+                          showDialog(
+                            context: context, 
+                            builder: (context){
+                              return AlertDialog(
+                                content: Text("field tidak boleh kosong"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: (){
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text("Ok"),
+                                  )
+                                ],
+                              );
+                            }
+                          );
+                        }
                       },
                       child: _isLoading? CircularProgressIndicator(color: Colors.white,) : Text("Sign Up"),
                       style: ElevatedButton.styleFrom(

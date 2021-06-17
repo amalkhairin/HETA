@@ -1,16 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:heta_app/components/heta_card.dart';
 import 'package:heta_app/constant/color.dart';
+import 'package:heta_app/model-logic/model/klinik/klinik.dart';
 import 'package:heta_app/page-view/reservasi/reservasi_detail_page.dart';
 
 class ReservasiSearchPage extends StatefulWidget {
-  final Widget? title;
-  ReservasiSearchPage({this.title});
+  final String? title;
+  final List<Klinik>? listKlinik;
+  ReservasiSearchPage({this.title = "Recomended for You", this.listKlinik});
   @override
   _ReservasiSearchPageState createState() => _ReservasiSearchPageState();
 }
 
 class _ReservasiSearchPageState extends State<ReservasiSearchPage> {
+  List<Klinik> _listTemp = [];
+
+  setList(){
+    setState(() {
+      _listTemp = widget.listKlinik!;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setList();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size screenSize = Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
@@ -24,7 +41,7 @@ class _ReservasiSearchPageState extends State<ReservasiSearchPage> {
           },
           icon: Icon(Icons.arrow_back, color: primaryColor,),
         ),
-        title: Text("Recomended for You", style: TextStyle(color: primaryColor),),
+        title: Text("${widget.title}", style: TextStyle(color: primaryColor),),
         centerTitle: true,
         actions: [],
         bottom: PreferredSize(
@@ -35,6 +52,24 @@ class _ReservasiSearchPageState extends State<ReservasiSearchPage> {
               width: screenSize.width,
               height: 50,
               child: TextFormField(
+                onChanged: (value){
+                  setState(() {
+                    _listTemp = widget.listKlinik!;
+                  });
+                  if(value.isNotEmpty){
+                    List<Klinik> _temp = [];
+                    for (var i = 0; i < _listTemp.length; i++) {
+                      if(_listTemp[i].getName!.toLowerCase().contains(value.toLowerCase())){
+                        _temp.add(_listTemp[i]);
+                      }
+                    }
+                    setState(() {
+                      _listTemp = _temp;
+                    });
+                  } else {
+                    _listTemp = widget.listKlinik!;
+                  }
+                },
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.white,
@@ -52,14 +87,14 @@ class _ReservasiSearchPageState extends State<ReservasiSearchPage> {
       ),
       body: SafeArea(
         child: ListView.builder(
-          itemCount: 10,
+          itemCount: _listTemp.length,
           itemBuilder: (context, index){
             return Padding(
               padding: EdgeInsets.fromLTRB(24, (index == 0? 24 : 8), 24, (index == 9? 24 : 8)),
               child: HETACard(
                 onTap: (){
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => ReservasiDetailPage())
+                    MaterialPageRoute(builder: (context) => ReservasiDetailPage(klinik: _listTemp[index],))
                   );
                 },
                 width: screenSize.width,
@@ -73,7 +108,7 @@ class _ReservasiSearchPageState extends State<ReservasiSearchPage> {
                       height: 64,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: NetworkImage("https://www.nespthreatenedspecies.edu.au/media/dzhnixjo/cat-outside_credit-rotiv-artic-unsplash.jpg"),
+                          image: NetworkImage("https://img.freepik.com/free-vector/illustration-hospital_53876-81075.jpg"),
                           fit: BoxFit.cover,
                         ),
                         shape: BoxShape.circle
@@ -87,12 +122,12 @@ class _ReservasiSearchPageState extends State<ReservasiSearchPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("UPT Klink Hewan Bandung", style: TextStyle(fontSize: 16, color: primaryColor),),
+                            Text("${_listTemp[index].getName}", style: TextStyle(fontSize: 16, color: primaryColor),),
                             SizedBox(height: 10,),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("Buah batu", style: TextStyle(fontSize: 12)),
+                                Text("${_listTemp[index].getAddress}", style: TextStyle(fontSize: 12)),
                                 Text("2.5 km", style: TextStyle(fontSize: 12)),
                               ],
                             ),

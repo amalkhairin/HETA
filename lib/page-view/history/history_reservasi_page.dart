@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:heta_app/components/data_not_found.dart';
 import 'package:heta_app/components/heta_card.dart';
+import 'package:heta_app/components/heta_loading_indicator.dart.dart';
 import 'package:heta_app/constant/color.dart';
+import 'package:heta_app/model-logic/logic/db.dart';
+import 'package:heta_app/model-logic/model/history/history_reservasi.dart';
+import 'package:heta_app/model-logic/model/pemilik_hewan/pemilik_hewan.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class HistoryReservasiPage extends StatefulWidget {
   @override
@@ -9,52 +15,100 @@ class HistoryReservasiPage extends StatefulWidget {
 }
 
 class _HistoryReservasiPageState extends State<HistoryReservasiPage> {
-  List _listHistoryReservasi = ["1"];
+  List<HistoryReservasiModel>? _listHistoryReservasi;
+  bool _isLoading = true;
+  Database db = Database();
+  PemilikHewan _user = PemilikHewan.instance;
+
+  loadHistoryReservasi() async {
+    List<HistoryReservasiModel> _temp = [];
+    var res = await db.getHistoryReservasi();
+    if (res != false) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+      for (var i = 0; i < res.length; i++) {
+        // _temp.add(HistoryReservasi.fromJson(res[i]));
+      }
+      if(mounted){
+        setState(() {
+          _listHistoryReservasi = _temp;
+        });
+      }
+    }
+    
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // loadHistoryReservasi();
+  }
 
   @override
   Widget build(BuildContext context) {
     Size screenSize = Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
 
-    return Container(
+    return _isLoading 
+    ? Center(
+      child: HETALoadingIndicator(),
+    )
+    : Container(
       color: backgroundColor,
-      child: _listHistoryReservasi.isNotEmpty
-      ? ListView.builder(
-        itemCount: _listHistoryReservasi.length,
-        itemBuilder: (context, index){
-          return Padding(
-            padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
-            child: HETACard(
-              width: screenSize.width,
-              height: 136,
-              color: Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: screenSize.width/2,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Reservation Number: 00113345", style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),),
-                          SizedBox(height: 10,),
-                          Text("UPT Klinik Hewan Bandung", maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: primaryColor, fontWeight: FontWeight.w400)),
-                          Text("Buah Batu", maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: primaryColor, fontWeight: FontWeight.w300)),
-                          SizedBox(height: 6,),
-                          Text("Drh. Franco", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w400)),
-                          Text("Time: 14.00", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w400)),
-                        ],
-                      ),
+      child: _listHistoryReservasi! != null
+      ? ValueListenableBuilder(
+        valueListenable: Hive.box("historyReservasi").listenable(),
+        builder: (context, Box box, _) {
+          if(box.isNotEmpty){
+            _listHistoryReservasi = box.getAt(_user.id!);
+          }
+          return ListView.builder(
+            itemCount: _listHistoryReservasi!.length,
+            itemBuilder: (context, index){
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
+                child: HETACard(
+                  width: screenSize.width,
+                  height: 136,
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: screenSize.width/2,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Reservation Number: ${_listHistoryReservasi![index].reservasinumber}", style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),),
+                              SizedBox(height: 10,),
+                              Text("${_listHistoryReservasi![index].namaKlinik}", maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: primaryColor, fontWeight: FontWeight.w400)),
+                              Text("${_listHistoryReservasi![index].alamatKlinik}", maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: primaryColor, fontWeight: FontWeight.w300)),
+                              SizedBox(height: 6,),
+                              Text("${_listHistoryReservasi![index].namaDokter}", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w400)),
+                              Text("Time: ${_listHistoryReservasi![index].time}", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w400)),
+                            ],
+                          ),
+                        ),
+                        Text("${_listHistoryReservasi![index].date}", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w400),),
+                      ],
                     ),
-                    Text("Mar 30, 2020", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w400),),
-                  ],
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           );
-        },
+        }
       )
       : DataNotFoundMessage(
         title: "Hmm.. Seems like nothing here",

@@ -4,7 +4,11 @@ import 'package:heta_app/components/filters_dialog.dart';
 import 'package:heta_app/components/heta_card.dart';
 import 'package:heta_app/components/heta_loading_indicator.dart.dart';
 import 'package:heta_app/constant/color.dart';
+import 'package:heta_app/model-logic/logic/cart.dart';
+import 'package:heta_app/model-logic/logic/db.dart';
 import 'package:heta_app/model-logic/model/buy_medicine/obat.dart';
+import 'package:heta_app/model-logic/model/pemilik_hewan/pemilik_hewan.dart';
+import 'package:heta_app/page-view/buy_medicine/buy_medicine_cart_page.dart';
 
 class BuyMedicineMainPage extends StatefulWidget {
   @override
@@ -12,12 +16,73 @@ class BuyMedicineMainPage extends StatefulWidget {
 }
 
 class _BuyMedicineMainPageState extends State<BuyMedicineMainPage> {
+  TextEditingController _searchController = TextEditingController();
+
   List _filterList = ["Cats", "Kittens", "Dogs"];
   List _selectedFilters = [];
   List _selectedFiltersIndex = [];
-  List<Obat> _listObat = [];
-  List<Obat> _listFilteredObat = [];
-  
+  List<Obat>? _listObat;
+  List<Obat>? _listFilteredObat;
+  List<Obat> _listSelectedObat = [];
+  List? _listQty;
+  Database db = Database();
+  PemilikHewan _user = PemilikHewan.instance;
+  Cart? _cart;
+  int _totalQty = 0;
+  bool _isLoading = true;
+
+  decrease(int index){
+    setState(() {
+      if(_listQty![index] > 0){
+        _listQty![index]--;
+        _totalQty--;
+      }
+    });
+  }
+
+  increase(int index){
+    setState(() {
+      _listQty![index]++;
+      _totalQty++;
+    });
+  }
+
+  loadMedicie() async {
+    List<Obat> _temp = [];
+    var res = await db.getAllMedicine();
+    if(res != false){
+      if(mounted){
+        setState(() {
+          _isLoading = false;
+        });
+      }
+      for (var i = 0; i < res.length; i++) {
+        _temp.add(Obat.fromJson(res[i]));
+      }
+      if(mounted){
+        setState(() {
+          _listObat = _temp;
+          _listFilteredObat = _temp;
+          _listQty = List.generate(_temp.length, (index) => 0);
+        });
+      }
+    }
+    if (mounted) {
+      setState(() {
+        _listObat = _temp;
+        _listFilteredObat = _temp;
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadMedicie();
+    _cart = Cart(idPemilikHewan: _user.id, listObat: []);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +105,8 @@ class _BuyMedicineMainPageState extends State<BuyMedicineMainPage> {
       body: SafeArea(
         child: Stack(
           children: [
-            _listObat.isEmpty
+            _isLoading ? Center(child: HETALoadingIndicator()) :
+            _listObat!.isEmpty
             ? Center(
               child: DataNotFoundMessage(
                 header: "Oops!\nProduct not found",
@@ -55,10 +121,12 @@ class _BuyMedicineMainPageState extends State<BuyMedicineMainPage> {
                 : SizedBox(height: 142,),
                 Padding(
                   padding: EdgeInsets.all(24),
-                  child: GridView.builder(
+                  child: _isLoading
+                  ? Center(child: HETALoadingIndicator(),)
+                  : GridView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
-                    itemCount: _listObat.length,
+                    itemCount: _listFilteredObat!.length,
                     itemBuilder: (context, index){
                       return HETACard(
                         width: screenSize.width/2.5,
@@ -73,11 +141,11 @@ class _BuyMedicineMainPageState extends State<BuyMedicineMainPage> {
                                 Container(
                                   width: 100,
                                   height: 100,
-                                  child: Placeholder(fallbackWidth: 20, fallbackHeight: 100,)
+                                  child: Image.network("${_listFilteredObat![index].image}")
                                 ),
                                 SizedBox(height: 8,),
-                                Text("Trixin", style: TextStyle(color: primaryColor),),
-                                Text("Rp120.000", style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),),
+                                Text("${_listFilteredObat![index].name}", style: TextStyle(color: primaryColor),),
+                                Text("${_listFilteredObat![index].harga}", style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),),
                               ],
                             ),
                             Container(
@@ -91,7 +159,13 @@ class _BuyMedicineMainPageState extends State<BuyMedicineMainPage> {
                                 children: [
                                   Flexible(
                                     child: TextButton(
-                                      onPressed: (){},
+                                      onPressed: (){
+                                        decrease(index);
+                                        setState(() {
+                                          _listSelectedObat.remove(_listFilteredObat![index]);
+                                          _cart!.updateCart(listObat: _listSelectedObat);
+                                        });
+                                      },
                                       child: Text("-", style: TextStyle(color: Colors.white, fontSize: 18),),
                                     ),
                                   ),
@@ -102,7 +176,7 @@ class _BuyMedicineMainPageState extends State<BuyMedicineMainPage> {
                                   ),
                                   TextButton(
                                     onPressed: null,
-                                    child: Text("1", style: TextStyle(color: Colors.white, fontSize: 14),),
+                                    child: Text("${_listQty![index]}", style: TextStyle(color: Colors.white, fontSize: 14),),
                                   ),
                                   Container(
                                     height: 50,
@@ -111,7 +185,13 @@ class _BuyMedicineMainPageState extends State<BuyMedicineMainPage> {
                                   ),
                                   Flexible(
                                     child: TextButton(
-                                      onPressed: (){},
+                                      onPressed: (){
+                                        increase(index);
+                                        setState(() {
+                                         _listSelectedObat.add(_listFilteredObat![index]);
+                                         _cart!.updateCart(listObat: _listSelectedObat);
+                                        });
+                                      },
                                       child: Text("+", style: TextStyle(color: Colors.white, fontSize: 18),),
                                     ),
                                   ),
@@ -150,6 +230,27 @@ class _BuyMedicineMainPageState extends State<BuyMedicineMainPage> {
                             width: screenSize.width - screenSize.width*0.30,
                             height: 64,
                             child: TextFormField(
+                              controller: _searchController,
+                              onChanged: (value){
+                                setState(() {
+                                  _listFilteredObat = _listObat!;
+                                });
+                                if(value.isNotEmpty){
+                                  List<Obat> _temp = [];
+                                  for (var i = 0; i < _listFilteredObat!.length; i++) {
+                                    if(_listFilteredObat![i].getName()!.toLowerCase().contains(value.toLowerCase())){
+                                      _temp.add(_listFilteredObat![i]);
+                                    }
+                                  }
+                                  setState(() {
+                                    _listFilteredObat = _temp;
+                                  });
+                                } else {
+                                  setState(() {
+                                    _listFilteredObat = _listObat!;
+                                  });
+                                }
+                              },
                               decoration: InputDecoration(
                                 filled: true,
                                 fillColor: Colors.white,
@@ -235,7 +336,9 @@ class _BuyMedicineMainPageState extends State<BuyMedicineMainPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
-          print(_selectedFilters);
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => BuyMedicineCartPage(cart: _cart,))
+          );
         },
         elevation: 4,
         child: Stack(
@@ -255,7 +358,7 @@ class _BuyMedicineMainPageState extends State<BuyMedicineMainPage> {
               child: CircleAvatar(
                 backgroundColor: tertiaryColor,
                 radius: 10,
-                child: Text("0", style: TextStyle(color: Colors.white, fontSize: 12),),
+                child: _isLoading ? Text("0", style: TextStyle(color: Colors.white, fontSize: 12),) : Text("${_cart!.totalJumlahObat}", style: TextStyle(color: Colors.white, fontSize: 12),),
               ),
             )
           ],

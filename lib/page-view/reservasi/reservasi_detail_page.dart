@@ -1,21 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:heta_app/components/heta_card.dart';
 import 'package:heta_app/constant/color.dart';
+import 'package:heta_app/model-logic/logic/db.dart';
+import 'package:heta_app/model-logic/model/klinik/klinik.dart';
+import 'package:heta_app/model-logic/model/pemilik_hewan/pemilik_hewan.dart';
 import 'package:heta_app/page-view/reservasi/reservasi_accepted_page.dart';
+import 'package:heta_app/utility/number_generator.dart';
+import 'package:hive/hive.dart';
+import 'package:heta_app/model-logic/model/history/history_reservasi.dart';
 
 class ReservasiDetailPage extends StatefulWidget {
+  final Klinik? klinik;
+  ReservasiDetailPage({this.klinik});
+
   @override
   _ReservasiDetailPageState createState() => _ReservasiDetailPageState();
 }
 
 class _ReservasiDetailPageState extends State<ReservasiDetailPage> {
 
-  int? _selectedDateIndex;
-  int? _selectedTimeIndex;
+  int? _selectedDateIndex = 0;
+  int? _selectedTimeIndex = 0;
   int? _selectedOPTimeIndex;
   List _timeList = ["Afternoon", "Night"];
   List _opTimeAfternoonList = ["11.30", "14.00", "15.00"];
   List _opTimeNightList = ["16.00", "17.00", "18.00"];
+  String _selectedTime = "";
+  List _hari = ["Tuesday, 15 May", "Wednesday, 16 May", "Thursday, 17 May"];
+  List _tempHari = ["2021-06-15", "2021-06-16", "2021-06-16"];
 
   bool _isSelectedAll(){
     return _selectedDateIndex != null && _selectedTimeIndex != null && _selectedOPTimeIndex != null;
@@ -61,8 +73,8 @@ class _ReservasiDetailPageState extends State<ReservasiDetailPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("UPT Klinik Hewan Bandung", style: TextStyle(color: primaryColor, fontSize: 16),),
-                          Text("Buah Batu", style: TextStyle(color: Colors.grey, fontSize: 13),)
+                          Text("${widget.klinik!.getName}", style: TextStyle(color: primaryColor, fontSize: 16),),
+                          Text("${widget.klinik!.getAddress}", style: TextStyle(color: Colors.grey, fontSize: 13),)
                         ],
                       ),
                     ),
@@ -143,7 +155,7 @@ class _ReservasiDetailPageState extends State<ReservasiDetailPage> {
                 padding: EdgeInsets.fromLTRB(24, 0, 24, 42),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List<Widget>.generate(3, (index) {
+                  children: List<Widget>.generate(_hari.length, (index) {
                     return HETACard(
                       onTap: (){
                         setState(() {
@@ -166,7 +178,7 @@ class _ReservasiDetailPageState extends State<ReservasiDetailPage> {
                                 Text("28 C", style: TextStyle(color: Colors.grey),)
                               ],
                             ),
-                            Text("Monday, 30 March", style: TextStyle(color: primaryColor, fontSize: 16))
+                            Text("${_hari[index]}", style: TextStyle(color: primaryColor, fontSize: 16))
                           ],
                         ),
                       ),
@@ -191,7 +203,7 @@ class _ReservasiDetailPageState extends State<ReservasiDetailPage> {
                       },
                       width: screenSize.width/2.5,
                       height: screenSize.width/6,
-                      enableBorder: _selectedTimeIndex == index,
+                      enableBorder: _selectedTimeIndex! == index,
                       borderColor: tertiaryColor,
                       child: Padding(
                         padding: EdgeInsets.all(8.0),
@@ -217,6 +229,11 @@ class _ReservasiDetailPageState extends State<ReservasiDetailPage> {
                       onTap: (){
                         setState(() {
                           _selectedOPTimeIndex = index;
+                          if(_selectedTimeIndex == 0){
+                            _selectedTime = _opTimeAfternoonList[index];
+                          } else {
+                            _selectedTime = _opTimeNightList[index];
+                          }
                         });
                       },
                       width: screenSize.width/4,
@@ -237,9 +254,24 @@ class _ReservasiDetailPageState extends State<ReservasiDetailPage> {
                   width: double.infinity,
                   height: 54,
                   child: ElevatedButton(
-                    onPressed: !_isSelectedAll()? null : (){
+                    onPressed: !_isSelectedAll()? null : () async {
+                      Database db = Database();
+                      PemilikHewan _user = PemilikHewan.instance;
+                      print("user: ${_user.id}");
+                      var res = await db.insertReservasi(id_pemilikHewan: _user.id, id_klinik: widget.klinik!.id, date: _tempHari[_selectedDateIndex!]);
+                      Box _tempBox = Hive.box("historyReservasi");
+                      HistoryReservasiModel _tempHistory = HistoryReservasiModel(
+                        reservasinumber: Generator.reservationNumber(),
+                        namaDokter: "Drh. Tirta Wijaya",
+                        namaKlinik: "${widget.klinik!.name}",
+                        alamatKlinik: "${widget.klinik!.address}",
+                        date: _tempHari[_selectedDateIndex!],
+                        time: _selectedTime
+                      );
+                      _tempBox.putAt(_user.id!, _tempHistory);
+                      
                       Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => ReservasiAcceptedPage())
+                        MaterialPageRoute(builder: (context) => ReservasiAcceptedPage(nama: widget.klinik!.getName,date: _hari[_selectedDateIndex!],))
                       );
                     },
                     style: ElevatedButton.styleFrom(

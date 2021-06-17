@@ -1,38 +1,47 @@
 
 class Obat {
-  int? _id;
-  String? _name;
-  double? _harga;
-  String? _image;
+  int? id;
+  String? name;
+  int? harga;
+  String? image;
 
-  Obat({int? id, String? name, double? harga, String? image}){
-    this._id = id;
-    this._name = name;
-    this._harga = harga;
-    this._image = image;
+  Obat({
+    this.id,
+    this.name,
+    this.harga,
+    this.image
+  });
+
+  factory Obat.fromJson(Map<String, dynamic> data){
+    return Obat(
+      id : data['id_obat'],
+      name : data['name'],
+      harga : data['harga'],
+      image : data['image'],
+    );
   }
 
-  int? get id => this._id;
+  int? getId() => this.id;
 
-  set id(int? value) {
-    this._id = value;
+  set setId(int? value) {
+    this.id = value;
   }
 
-  String? get name => this._name;
+  String? getName() => this.name;
 
-  set name(String? value) {
-    this._name = value;
+  set setName(String? value) {
+    this.name = value;
   }
 
-  double? get harga => this._harga;
+  int? getHarga() => this.harga;
 
-  set harga(double? value) {
-    this._harga = value;
+  set setHarga(int? value) {
+    this.harga = value;
   }
 
-  String? get image => this._image;
+  String? getImage() => this.image;
 
-  set image(String? value) {
-    this._image = value;
+  set setImage(String? value) {
+    this.image = value;
   }
 }

@@ -3,15 +3,28 @@ class Klinik {
   int? id;
   String? name;
   String? address;
-  List<String>? mapLocation;
+  String? mapLocation;
   String? treatment;
+  String? operationalTime;
 
-  Klinik({int? id, String? name, String? address, List<String>? mapLocation, String? treatment}){
-    this.id = id;
-    this.name = name;
-    this.address = address;
-    this.mapLocation = mapLocation;
-    this.treatment = treatment;
+  Klinik({
+    this.id,
+    this.name,
+    this.address,
+    this.mapLocation,
+    this.treatment,
+    this.operationalTime
+  });
+
+  factory Klinik.fromjson(Map<String, dynamic> data){
+    return Klinik(
+      id : data['id_klinik'],
+      name : data['nama_klinik'],
+      address : data['address'],
+      mapLocation : data['mapLocation'],
+      operationalTime: data['operational_time'],
+      treatment : data['treatment']
+    );
   }
 
   int? get getId => this.id;
@@ -26,12 +39,16 @@ class Klinik {
 
   set setAddress( address) => this.address = address;
 
-  List<String>? get getMapLocation => this.mapLocation;
+  String? get getMapLocation => this.mapLocation;
 
   set setMapLocation( mapLocation) => this.mapLocation = mapLocation;
 
   String? get getTreatment => this.treatment;
 
   set setTreatment( treatment) => this.treatment = treatment;
+
+  double? getDistance(userPosition){
+    return 0;
+  }
 
 }

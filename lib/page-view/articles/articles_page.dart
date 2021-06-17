@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:heta_app/constant/color.dart';
+import 'package:heta_app/model-logic/model/articles/article.dart';
 
 class ArticlesPage extends StatelessWidget {
+  final Article? article;
+  ArticlesPage({this.article});
   @override
   Widget build(BuildContext context) {
     Size screenSize = Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
@@ -25,7 +28,7 @@ class ArticlesPage extends StatelessWidget {
             SizedBox(height: 24,),
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
-              child: Text("Penjelasan 16 Sifat Aneh Kucing Secara Ilmiah", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+              child: Text("${article!.getTitle}", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
             ),
             SizedBox(height: 24,),
             Padding(
@@ -33,8 +36,8 @@ class ArticlesPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("IDN Times", style: TextStyle(fontSize: 12)),
-                  Text("16 Juni 2019", style: TextStyle(fontSize: 12)),
+                  Text("${article!.getPublisher}", style: TextStyle(fontSize: 12)),
+                  Text("${article!.getDate}", style: TextStyle(fontSize: 12)),
                 ],
               ),
             ),
@@ -46,7 +49,7 @@ class ArticlesPage extends StatelessWidget {
                 height: screenSize.width/1.5,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: NetworkImage("https://www.nespthreatenedspecies.edu.au/media/dzhnixjo/cat-outside_credit-rotiv-artic-unsplash.jpg"),
+                    image: NetworkImage(article!.getPhoto!),
                     fit: BoxFit.cover,
                   ),
                   borderRadius: BorderRadius.circular(6)
@@ -56,10 +59,7 @@ class ArticlesPage extends StatelessWidget {
             SizedBox(height: 24,),
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
-              child: Text(
-                "Proses perkembangbiakan dari anjing membuat kita jadi mengenal banyak tipe anjing yang berbeda. Mulai dari warna, bentuk, ukuran, bulu, dan juga karakter fisik. Ternyata, jumlah perkembangbiakan anjing ini lebih banyak dari mamalia lainnya. Ternyata ada lebih dari 400 ras anjing di dunia. Diperkirakan jumlah ini terus bertambah.",
-                style: TextStyle(fontSize: 16),
-              ),
+              child: Text( "${article!.getContent}", style: TextStyle(fontSize: 16), ),
             )
           ],
         ),

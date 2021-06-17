@@ -1,15 +1,20 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:heta_app/page-view/history/history_main.dart';
-import 'package:heta_app/page-view/home.dart';
-import 'package:heta_app/page-view/login_register/login.dart';
-import 'package:heta_app/page-view/reservasi/reservasi_accepted.dart';
-import 'package:heta_app/page-view/reservasi/reservasi_detail.dart';
-import 'package:heta_app/page-view/reservasi/reservasi_main.dart';
+import 'package:heta_app/model-logic/model/history/history_buymedicine.dart';
+import 'package:heta_app/model-logic/model/history/history_reservasi.dart';
+import 'package:heta_app/page-view/login_register/login_page.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart' as pathProvider;
 
-import 'page-view/reservasi/reservasi_search.dart';
-
-void main() {
+Future main() async {
+  Directory directory = await pathProvider.getApplicationDocumentsDirectory();
+  Hive.init(directory.path);
+  Hive.registerAdapter(HistoryMedicineAdapter());
+  Hive.registerAdapter(HistoryReservasiAdapter());
+  Hive.openBox("histryReservasi");
+  Hive.openBox("historyMedicine");
+  
   runApp(MyApp());
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.white,
@@ -25,7 +30,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'HETA App',
       debugShowCheckedModeBanner: false,
-      home: Login(),
+      home: LoginPage(),
     );
   }
 }
